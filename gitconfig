@@ -1,0 +1,41 @@
+[core]
+        editor = emacs
+
+[user]
+        name = Leonardo Giordani
+        email = giordani.leonardo@gmail.com
+
+[color]
+        branch = auto
+        diff = auto
+        interactive = auto
+        status = auto
+
+[alias]
+        au = add -u
+        st = status
+        di = diff
+        co = checkout
+        ci = commit -v
+        br = branch
+        bd = branch -d
+        sta = stash
+        cob = checkout -b
+        com = checkout master
+        mff = merge --no-ff
+        alias = config --get-regexp 'alias.*'
+        logo = log --pretty=oneline
+        logo = log --pretty=oneline
+        tlog = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+        ttlog = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+        blog = log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)- %an%C(reset)' --abbrev-commit
+
+
+[url "http://anongit.kde.org/"]
+     insteadOf = kde:
+
+[url "git@git.kde.org:"]
+     pushInsteadOf = kde:
+
+[push]
+        default = simple
