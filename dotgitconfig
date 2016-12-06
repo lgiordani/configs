@@ -1,5 +1,6 @@
 [core]
         editor = emacs
+        excludesfile = ~/.gitignore
 
 [user]
         name = Leonardo Giordani
@@ -16,17 +17,23 @@
         au = add -u
         bd = branch -d
         br = branch
+		brn = rev-parse --abbrev-ref HEAD
+        brv = branch -avv
         ci = commit -v
         co = checkout
         cor = checkout
         cob = checkout -b
         cod = checkout develop
         com = checkout master
-        di = diff
+        cot = checkout -t
+        df = "!git diff $(git merge-base develop $(git brn))..$(git brn)"
+        dfn = "!git df --name-only"
         mff = merge --no-ff
+        pub = "!git push -u origin $(git brn)"
         put = push -u origin
         st = status
-        sta = stash
+        sh = stash
+		unpub = push origin :$(git brn)
         
         blog = log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)- %an%C(reset)' --abbrev-commit
         logo = log --pretty=oneline
