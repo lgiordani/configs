@@ -18,7 +18,7 @@
         bd = branch -d
         br = branch
 		brn = rev-parse --abbrev-ref HEAD
-        brv = branch -avv
+        brv = branch -vv
         ci = commit -v
         co = checkout
         cor = checkout
