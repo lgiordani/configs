@@ -14,32 +14,37 @@
 
 [alias]
         alias = config --get-regexp 'alias.*'
-        au = add -u
+
+		brn = rev-parse --abbrev-ref HEAD
         bd = branch -d
         br = branch
-		brn = rev-parse --abbrev-ref HEAD
         brv = branch -vv
+
         ci = commit -v
         co = checkout
-        cor = checkout
         cob = checkout -b
         cod = checkout develop
         com = checkout master
-        cot = checkout -t
+        cot = checkout --track
+        
         df = "!git diff $(git merge-base develop $(git brn))..$(git brn)"
         dfn = "!git df --name-only"
+        
+        med = merge develop
         mff = merge --no-ff
-        pub = "!git push -u origin $(git brn)"
-        put = push -u origin
+        
+        pub = "!git push --set-upstream origin $(git brn)"
+        put = push --set-upstream origin
+        
         st = status
         sh = stash
+        shl = stash list
+
 		unpub = push origin :$(git brn)
         
         blog = log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)- %an%C(reset)' --abbrev-commit
         logo = log --pretty=oneline
-        logo = log --pretty=oneline
         tlog = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
-        ttlog = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
 
 [push]
         default = simple
