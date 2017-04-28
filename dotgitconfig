@@ -26,6 +26,7 @@
         cod = checkout develop
         com = checkout master
         cot = checkout --track
+        cpn = cherry-pick -n
         
         df = "!git diff $(git merge-base develop $(git brn))..$(git brn)"
         dfn = "!git df --name-only"
@@ -40,6 +41,9 @@
         sh = stash
         shl = stash list
 
+        sw = "!git stash && git checkout"
+        sb = "!git checkout - && git stash apply"
+
 		unpub = push origin :$(git brn)
         
         blog = log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)- %an%C(reset)' --abbrev-commit
@@ -48,3 +52,5 @@
 
 [push]
         default = simple
+[fetch]
+	prune = true
