@@ -4,3 +4,6 @@
 .tags*
 venv*
 tmp_*
+
+*.sublime-project
+*.sublime-workspace
