@@ -26,8 +26,11 @@
         cod = checkout develop
         com = checkout master
         cot = checkout --track
+        cp = cherry-pick
         cpn = cherry-pick -n
-        
+        cpnr = "!f() { git cpn $@; git reset HEAD . ; }; f"
+        clr = "!git branch -D $(git brv | grep ': gone] ' | awk '{print $1}' | xargs)"
+
         dd = "!git diff $(git merge-base develop $(git brn))..$(git brn)"
         ddn = "!git dd --name-only"
         
