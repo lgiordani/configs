@@ -37,12 +37,13 @@
         md = "!git diff $(git merge-base master $(git brn))..$(git brn)"
         mdn = "!git md --name-only"
         med = merge develop
+        mem = merge master
         mff = merge --no-ff
 
         next-commit = "!git logo --reverse --ancestry-path HEAD..develop | head -n 1 | cut -d \" \" -f 1"
-        next = "!git checkout $(git next-commit)"
+        next = "!git co . && git checkout $(git next-commit)"
 
-        prev = checkout HEAD^
+        prev = "!git co . && git co HEAD^"
         pub = "!git push --set-upstream origin $(git brn)"
         put = push --set-upstream origin
         
@@ -53,6 +54,7 @@
         sw = "!git stash && git checkout"
         sb = "!git checkout - && git stash apply"
 
+        upd = "!git com && git pull && git clr && git brv"
         unpub = push origin :$(git brn)
         
         blog = log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)- %an%C(reset)' --abbrev-commit

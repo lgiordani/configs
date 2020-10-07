@@ -1,0 +1,3 @@
+alias ll='ls -l'
+alias hssh='grep -E "(^#|^Host)" ~/.ssh/config | sed -r -e s,"Host","ssh", -e s,"#",\\n#, | grep -E --color "^# .*|$"'
+alias yd='youtube-dl -c -f best --external-downloader aria2c --external-downloader-args "-x10 -s10"'

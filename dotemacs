@@ -1,0 +1,292 @@
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
+(setq custom-file "~/.emacs-custom")
+(load custom-file)
+
+;; Load package system and add MELPA repository.
+(require 'package)
+(add-to-list
+ 'package-archives
+ ;; '("melpa" . "https://stable.melpa.org/packages/") ; many packages won't show if using stable
+ '("melpa" . "https://melpa.milkbox.net/packages/")
+ t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GLOBAL SETTINGS
+
+;; Open .emacs with C-x c
+(defun dotemacs () (interactive) (switch-to-buffer (find-file-noselect "~/.emacs")))
+(global-set-key (kbd "C-x c") 'dotemacs)
+
+;; Visual line mode everywhere, please
+(global-visual-line-mode t)
+
+;; Display line numbers
+(global-display-line-numbers-mode)
+
+;; I keep pressing C-next by mistake...
+(global-unset-key (kbd "C-<next>"))
+
+;; Set C-c, C-x, C-v just to be in sync with the rest of the world
+(cua-mode t)
+
+;; Move up and down and recentre
+;; Directions in CUA scroll are: "down" towards the beginning of the buffer
+;; and "up" towards the end of it. I'll keep the directions as
+;; in the traditional sense of the direction on the screen, though
+;; (defun scroll-down-and-recentre ()
+;;   (interactive)
+;;   (cua-scroll-down)
+;;   (recenter-top-bottom))
+;; (defun scroll-up-and-recentre ()
+;;   (interactive)
+;;   (cua-scroll-up)
+;;   (recenter-top-bottom))
+;; (global-set-key (kbd "C-<prior>") 'scroll-down-and-recentre)
+;; (global-set-key (kbd "C-<next>") 'scroll-up-and-recentre)
+
+;; Show the matching parenthesis
+(show-paren-mode 1)
+
+;; Syntactic close
+;; https://github.com/emacs-berlin/syntactic-close
+(global-set-key (kbd "C-]") 'syntactic-close)
+
+;; Ivy completion
+;; https://github.com/abo-abo/swiper
+(ivy-mode 1)
+(define-key ivy-minibuffer-map (kbd "S-<up>") #'ivy-previous-history-element)
+(define-key ivy-minibuffer-map (kbd "S-<down>") #'ivy-next-history-element)
+
+;; https://stackoverflow.com/questions/17958397/emacs-delete-whitespaces-or-a-word
+(defun kill-whitespace-or-word ()
+  (interactive)
+  (if (looking-at "[ \t\n]")
+      (let ((p (point)))
+        (re-search-forward "[^ \t\n]" nil :no-error)
+        (backward-char)
+        (kill-region p (point)))
+    (kill-word 1)))
+(global-set-key (kbd "C-<delete>") 'kill-whitespace-or-word)
+
+;; Set transparency of emacs
+;; https://www.emacswiki.org/emacs/TransparentEmacs
+(defun transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
+(set-frame-parameter (selected-frame) 'alpha '90)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; KEYBOARD MAPPING
+
+; Define a proper mapping for the Italian keyboard over the English one
+(quail-define-package
+ "italian-english-keyboard" "Latin-1" "IT@" t
+ "Italian (Italiano) input method for modern English keyboards"
+ nil t t t t nil nil nil nil nil t)
+
+;; \|  1!  2"  3£  4$  5%  6&  7/  8(  9)  0=  '?  ì^
+;;      qQ  wW  eE  rR  tT  yY  uU  iI  oO  pP  èé  +*
+;;       aA  sS  dD  fF  gG  hH  jJ  kK  lL  òç  à°  ù§
+;;    <>  zZ  xX  cC  vV  bB  nN  mM  ,;  .:  -_
+
+;; èè -> È Originally CapsLock+è
+;; àà -> # Originally AltGr+à
+;; òò -> @ Originally AltGr+ò
+;; ìì -> ~ Originally AltGr+ì
+
+(quail-define-rules
+ ("`" ?\\) ("¬" ?|)
+ ("^" ?&)
+ ("&" ?/)
+ ("*" ?\()
+ ("(" ?\))
+ (")" ?=)
+ ("-" ?') ("_" ??)
+ ("=" ?ì) ("+" ?^) ("==" ?~)
+
+ ("[" ?è) ("{" ?é) ("[[" ?È)
+ ("]" ?+) ("}" ?*)
+
+ (";" ?ò) (":" ?ç) (";;" ?@)
+ ("'" ?à) ("@" ?\°) ("''" ?#)
+ ("#" ?ù) ("~" ?§)
+ 
+ ("\\" ?<) ("|" ?>)
+ ("<" ?\;)
+ (">" ?:)
+ ("/" ?-) ("?" ?_)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LINES AND REGIONS
+
+;; Define C-/ to comment and uncomment regions and lines
+(defun comment-or-uncomment-line-or-region ()
+    "Comments or uncomments the region or the current line if there's no active region."
+    (interactive)
+    (let (beg end)
+        (if (region-active-p)
+            (setq beg (region-beginning) end (region-end))
+            (setq beg (line-beginning-position) end (line-end-position)))
+        (comment-or-uncomment-region beg end)
+        (next-line)))
+(global-set-key (kbd "C-/") 'comment-or-uncomment-line-or-region)
+
+;; Drag-stuff - Drag lines and regions
+(drag-stuff-global-mode 1)
+;; Use C-S-up/down
+(setq drag-stuff-modifier '(control shift))
+(define-key drag-stuff-mode-map (drag-stuff--kbd 'up) 'drag-stuff-up)
+(define-key drag-stuff-mode-map (drag-stuff--kbd 'down) 'drag-stuff-down)
+
+;; Duplicate line with C-S-d
+(defun duplicate-current-line-or-region (arg)
+  "Duplicates the current line or region ARG times.
+If there's no region, the current line will be duplicated. However, if
+there's a region, all lines that region covers will be duplicated."
+  (interactive "p")
+  (let (beg end (origin (point)))
+    (if (and mark-active (> (point) (mark)))
+        (exchange-point-and-mark))
+    (setq beg (line-beginning-position))
+    (if mark-active
+        (exchange-point-and-mark))
+    (setq end (line-end-position))
+    (let ((region (buffer-substring-no-properties beg end)))
+      (dotimes (i arg)
+        (goto-char end)
+        (newline)
+        (insert region)
+        (setq end (point)))
+      (goto-char (+ origin (* (length region) arg) arg)))))
+(global-set-key (kbd "C-S-d") 'duplicate-current-line-or-region)
+
+;; Multiple cursors
+(global-set-key (kbd "C-d") 'mc/mark-next-like-this-word)
+(global-set-key (kbd "C-c C-d") 'mc/mark-all-words-like-this)
+(global-set-key (kbd "C-M-<up>") 'mc/mark-previous-lines)
+(global-set-key (kbd "C-M-<down>") 'mc/mark-next-lines)
+(global-set-key (kbd "C-M-d") 'mc/edit-lines)
+
+;; C-a marks the whole buffer
+(global-set-key (kbd "C-a") 'mark-whole-buffer)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; WINDOWS AND BUFFERS
+
+;; Windmove - move between windows use ALT
+(windmove-default-keybindings 'meta)
+;; Unset Shift-arrow keybindings
+(global-unset-key (vector (list 'shift 'left)))
+(global-unset-key (vector (list 'shift 'right)))
+(global-unset-key (vector (list 'shift 'up)))
+(global-unset-key (vector (list 'shift 'down)))
+
+;; Skip system buffers when cycling
+(set-frame-parameter (selected-frame) 'buffer-predicate
+		     (lambda (buf) (not (string-match-p "^*" (buffer-name buf)))))
+
+;; Map previous and next buffer to C-s-
+(global-set-key (kbd "C-s-<left>") 'previous-buffer)
+(global-set-key (kbd "C-s-<right>") 'next-buffer)
+
+;; Golden ratio mode
+(require 'golden-ratio)
+(golden-ratio-mode 1)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SPELL CHECKING
+
+;; Spell check
+(global-set-key (kbd "<f6>") 'flyspell-mode)
+
+;; Spell check with hunspell
+(when (executable-find "hunspell")
+  (setq-default ispell-program-name "hunspell")
+  (setq ispell-really-hunspell t))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PYTHON DEVELOPMENT
+
+;; Enable Elpy for Python development
+;; https://elpy.readthedocs.io/en/latest/
+(setq elpy-rpc-python-command "python3")
+(elpy-enable)
+
+;; Prevent Elpy from overriding Windmove shortcuts
+(eval-after-load "elpy"
+  '(cl-dolist (key '("M-<up>" "M-<down>" "M-<left>" "M-<right>"))
+     (define-key elpy-mode-map (kbd key) nil)))
+
+;; Prevent Elpy from overriding standard cursor movements
+(eval-after-load "elpy"
+  '(cl-dolist (key '("C-<left>" "C-<right>"))
+     (define-key elpy-mode-map (kbd key) nil)))
+
+;; Run black on save
+(add-hook 'elpy-mode-hook (lambda ()
+  (add-hook 'before-save-hook 'elpy-black-fix-code nil t)))
+
+;; Use black to check syntax
+;; (custom-set-variables '(elpy-syntax-check-command "black --check"))
+
+;; Set C-8 to format Python code
+(global-set-key (kbd "C-8") 'elpy-black-fix-code)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; JS DEVELOPMENT
+
+;; JSX
+;;https://github.com/felipeochoa/rjsx-mode
+(add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+;; Don't override my beloved multiple cursors
+(with-eval-after-load 'rjsx-mode
+  (define-key rjsx-mode-map (kbd "C-d") nil))
+
+;; JS is indented with 2 spaces
+(custom-set-variables '(js-indent-level 2))
+
+;; Use binaries in node_modules
+;; https://github.com/codesuki/add-node-modules-path
+(add-hook 'js2-mode-hook 'add-node-modules-path)
+
+;; Pretty JS code
+;; https://github.com/prettier/prettier-emacs
+(require 'prettier-js)
+(add-hook 'js2-mode-hook 'prettier-js-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OTHER LANGUAGES
+
+;; Terraform
+;; https://github.com/emacsorphanage/terraform-mode
+(require 'terraform-mode)
+(add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
+(add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
+
+;; YAML
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FILES AND PROJECTS
+
+;; Projectile
+;; https://docs.projectile.mx/projectile/usage.html
+(require 'projectile)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(projectile-mode +1)
+(setq projectile-completion-system 'ivy)
+
+;; Prescient?
+;; https://github.com/raxod502/prescient.el
+
+;; Treemacs?
+;; https://github.com/Alexander-Miller/treemacs
+
