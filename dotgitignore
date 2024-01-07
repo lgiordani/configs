@@ -1,9 +1,17 @@
 *.pyo
 *.pyc
-*~
 .tags*
 venv*
 tmp_*
 
+# Backup files
+*~
+#*
+
 *.sublime-project
 *.sublime-workspace
+
+.coverage
+
+# Some projects require configuration changes
+.emacs

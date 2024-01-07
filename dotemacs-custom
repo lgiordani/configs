@@ -5,17 +5,58 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
- '(custom-enabled-themes (quote (tango-dark)))
- '(default-input-method (quote italian-english-keyboard))
+ '(cua-mode t nil (cua-base))
+ '(custom-enabled-themes '(tango-dark))
+ '(custom-safe-themes
+   '("b83d7988bfdb964016b1e89515e6768598c8a6606eb7bab247455e6b0716e4ec" "d9c78a06962a477c8b9e8b1cf253ab880dced292c41b25857dac5e8106a5a5ad" "e61323febd2c6f9bc48046cbc5bb023bfe75c4fba97a88b64f3ecdd34fda568e" "51901e712a8c75b55e01dddeafecbbee5dee0c6170f4fa70e3996c71abdda718" "ca8425d7e3c0bfcb7d0306c41f92139391efb0696546caba87ba8b80e00ef984" "64916b77edc80a7a0d9bc4596109038ce2ee43df2932feaa821fcb173a4aa163" "5e8233c5f1b421e8c894a90a75fe07c2c4942c90ef8f41946fbcf2e420d652ee" "e5095aab1d28a223de4a533be8f1b9cafc518abbcb4c9e09da4dc0cd926caf3a" "f3e8a71eca26e1204520b353eefb4560d209dd31a194159bafe9c8c328243afa" "4bed14add6d1beecca39ad740cd24714d029e1db26ca0f323f36260b25169364" "1406f7e333e182036a6f36addd9b01bddedceded36e46f347697af09f9018a54" "6345a7124550ce8d2a1ae3e66f04d7136d86df0e8289fa0d897201065d5e996e" "00cec71d41047ebabeb310a325c365d5bc4b7fab0a681a2a108d32fb161b4006" "a3010c151dc4f42d56dec26a85ae5640afc227bece71d058e394667718b66a49" "f458b92de1f6cf0bdda6bce23433877e94816c3364b821eb4ea9852112f5d7dc" "eca44f32ae038d7a50ce9c00693b8986f4ab625d5f2b4485e20f22c47f2634ae" "7e068da4ba88162324d9773ec066d93c447c76e9f4ae711ddd0c5d3863489c52" "ff24d14f5f7d355f47d53fd016565ed128bf3af30eb7ce8cae307ee4fe7f3fd0" "745d03d647c4b118f671c49214420639cb3af7152e81f132478ed1c649d4597d" "fe2539ccf78f28c519541e37dc77115c6c7c2efcec18b970b16e4a4d2cd9891d" "da53441eb1a2a6c50217ee685a850c259e9974a8fa60e899d393040b4b8cc922" "7a7b1d475b42c1a0b61f3b1d1225dd249ffa1abb1b7f726aec59ac7ca3bf4dae" "1278c5f263cdb064b5c86ab7aa0a76552082cf0189acf6df17269219ba496053" "e8df30cd7fb42e56a4efc585540a2e63b0c6eeb9f4dc053373e05d774332fc13" "b186688fbec5e00ee8683b9f2588523abdf2db40562839b2c5458fcfb322c8a4" "3d54650e34fa27561eb81fc3ceed504970cc553cfd37f46e8a80ec32254a3ec3" "a9a67b318b7417adbedaab02f05fa679973e9718d9d26075c6235b1f0db703c8" "246a9596178bb806c5f41e5b571546bb6e0f4bd41a9da0df5dfbca7ec6e2250c" "f91395598d4cb3e2ae6a2db8527ceb83fed79dbaf007f435de3e91e5bda485fb" "4f1d2476c290eaa5d9ab9d13b60f2c0f1c8fa7703596fa91b235db7f99a9441b" "028c226411a386abc7f7a0fba1a2ebfae5fe69e2a816f54898df41a6a3412bb5" "613aedadd3b9e2554f39afe760708fc3285bf594f6447822dd29f947f0775d6c" "d268b67e0935b9ebc427cad88ded41e875abfcc27abd409726a92e55459e0d01" "c6608bca43f98e036609034c8dff6b360fdfc0738d2b1e6d739515b904ee6233" "5ba3e8fa422cf65368cc2e5e25a0a3b504ba639be1c0674425d12f54bae3f7e0" "d88e2b282efbcef32b660d0bb2a7523bb36f4fb4e381fd711647712b886246d0" "d8437d3de8b3332ae4906fc98d74e9387de2c64b1e5b14054efb089025701835" "74fcd705604c9ab701aabec188a762822e0f7f34ae542644f33e64f3c369d4a7" "96b6bb615fa8b64e6b159be5a5c5eaf284146834691df06b77ea8c6e30c97307" "e074be1c799b509f52870ee596a5977b519f6d269455b84ed998666cf6fc802a" "01cf34eca93938925143f402c2e6141f03abb341f27d1c2dba3d50af9357ce70" "3df5335c36b40e417fec0392532c1b82b79114a05d5ade62cfe3de63a59bc5c6" "08a27c4cde8fcbb2869d71fdc9fa47ab7e4d31c27d40d59bf05729c4640ce834" "79278310dd6cacf2d2f491063c4ab8b129fee2a498e4c25912ddaa6c3c5b621e" default))
+ '(exwm-floating-border-color "#404a4f")
+ '(fci-rule-color "#D6D6D6")
+ '(global-display-line-numbers-mode t)
+ '(highlight-tail-colors ((("#374544") . 0) (("#33434a") . 20)))
  '(inhibit-startup-screen t)
+ '(ispell-dictionary nil)
+ '(jdee-db-active-breakpoint-face-colors (cons "#FFFBF0" "#268bd2"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#FFFBF0" "#859900"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#FFFBF0" "#E1DBCD"))
  '(js-indent-level 2)
+ '(objed-cursor-color "#dc322f")
  '(package-selected-packages
-   (quote
-    (syntactic-close ivy projectile rjsx-mode js2-mode golden-ratio add-node-modules-path prettier-js tide elpy jinja2-mode drag-stuff markdown-mode fcitx command-log-mode yaml-mode terraform-mode multiple-cursors))))
+   '(typescript-mode kotlin-mode python-black company lsp-ui pyenv-mode elpy unicode-fonts web-mode emmet-mode lsp-mode rustic use-package flycheck treemacs-magit treemacs-all-the-icons treemacs all-the-icons doom-themes centaur-tabs adoc-mode zones spell-fu ztree json-mode editorconfig dockerfile-mode nginx-mode syntactic-close ivy projectile rjsx-mode js2-mode golden-ratio add-node-modules-path prettier-js tide jinja2-mode drag-stuff markdown-mode fcitx command-log-mode yaml-mode terraform-mode multiple-cursors))
+ '(pdf-view-midnight-colors (cons "#556b72" "#FDF6E3"))
+ '(rustic-ansi-faces
+   ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
+ '(server-mode nil)
+ '(show-paren-mode t)
+ '(tool-bar-mode nil)
+ '(vc-annotate-background "#FDF6E3")
+ '(vc-annotate-color-map
+   (list
+    (cons 20 "#859900")
+    (cons 40 "#959300")
+    (cons 60 "#a58e00")
+    (cons 80 "#b58900")
+    (cons 100 "#bc7407")
+    (cons 120 "#c35f0e")
+    (cons 140 "#cb4b16")
+    (cons 160 "#cd4439")
+    (cons 180 "#d03d5d")
+    (cons 200 "#d33682")
+    (cons 220 "#d63466")
+    (cons 240 "#d9334a")
+    (cons 260 "#dc322f")
+    (cons 280 "#dd5c56")
+    (cons 300 "#de867e")
+    (cons 320 "#dfb0a5")
+    (cons 340 "#D6D6D6")
+    (cons 360 "#D6D6D6")))
+ '(vc-annotate-very-old-color nil)
+ '(warning-suppress-log-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(flycheck-error ((t (:underline "dark orange"))))
  '(flymake-error ((t (:foreground "orange red" :background "yellow"))))
+ '(flyspell-incorrect ((t (:underline "dark orange"))))
  '(js2-external-variable ((t (:foreground "orange red" :background "yellow")))))

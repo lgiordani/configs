@@ -14,49 +14,42 @@
 
 [alias]
         alias = config --get-regexp 'alias.*'
-
-        brn = rev-parse --abbrev-ref HEAD
         bd = branch -d
         br = branch
+        brn = rev-parse --abbrev-ref HEAD
         brv = branch -vv
-
         ci = commit -v
+        clr = "!git brv | grep ': gone] ' | awk '{print $1}' | xargs -r -n1 git branch -D"
         co = checkout
         cob = checkout -b
         cod = checkout develop
-        com = checkout master
+        com = "!git checkout $(git master)"
         cot = checkout --track
         cp = cherry-pick
         cpn = cherry-pick -n
         cpnr = "!f() { git cpn $@; git reset HEAD . ; }; f"
-        clr = "!git branch -D $(git brv | grep ': gone] ' | awk '{print $1}' | xargs)"
-
         dd = "!git diff $(git merge-base develop $(git brn))..$(git brn)"
         ddn = "!git dd --name-only"
-        
-        md = "!git diff $(git merge-base master $(git brn))..$(git brn)"
+	df = diff --color-words="[^[:space:]]|([[:alnum:]]|UTF_8_GUARD)+"
+	master = "!git brv | grep -Eo '^\\*? +(master|main)' | sort | head -n 1 | sed -r s,'\\*? +',,g"
+        md = "!git diff $(git merge-base $(git master) $(git brn))..$(git brn)"
         mdn = "!git md --name-only"
         med = merge develop
-        mem = merge master
+        mem = "!git merge $(git master)"
         mff = merge --no-ff
-
-        next-commit = "!git logo --reverse --ancestry-path HEAD..develop | head -n 1 | cut -d \" \" -f 1"
         next = "!git co . && git checkout $(git next-commit)"
-
+        next-commit = "!git logo --reverse --ancestry-path HEAD..develop | head -n 1 | cut -d \" \" -f 1"
         prev = "!git co . && git co HEAD^"
         pub = "!git push --set-upstream origin $(git brn)"
         put = push --set-upstream origin
-        
-        st = status
+        sb = "!git checkout - && git stash apply"
         sh = stash
         shl = stash list
-
+        st = status
         sw = "!git stash && git checkout"
-        sb = "!git checkout - && git stash apply"
-
-        upd = "!git com && git pull && git clr && git brv"
         unpub = push origin :$(git brn)
-        
+        upd = "!git com && git pull && git clr && git brv"
+       
         blog = log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)- %an%C(reset)' --abbrev-commit
         logo = log --pretty=oneline
         tlog = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
