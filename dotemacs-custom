@@ -21,10 +21,14 @@
  '(js-indent-level 2)
  '(objed-cursor-color "#dc322f")
  '(package-selected-packages
-   '(typescript-mode kotlin-mode python-black company lsp-ui pyenv-mode elpy unicode-fonts web-mode emmet-mode lsp-mode rustic use-package flycheck treemacs-magit treemacs-all-the-icons treemacs all-the-icons doom-themes centaur-tabs adoc-mode zones spell-fu ztree json-mode editorconfig dockerfile-mode nginx-mode syntactic-close ivy projectile rjsx-mode js2-mode golden-ratio add-node-modules-path prettier-js tide jinja2-mode drag-stuff markdown-mode fcitx command-log-mode yaml-mode terraform-mode multiple-cursors))
+   '(ruff-format diff-hl magit markdown-toc which-key typescript-mode kotlin-mode python-black company lsp-ui pyenv-mode elpy unicode-fonts web-mode emmet-mode lsp-mode rustic use-package flycheck treemacs-magit treemacs-all-the-icons treemacs all-the-icons doom-themes centaur-tabs adoc-mode zones spell-fu ztree json-mode editorconfig dockerfile-mode nginx-mode syntactic-close ivy projectile rjsx-mode js2-mode golden-ratio add-node-modules-path prettier-js tide jinja2-mode drag-stuff markdown-mode fcitx command-log-mode yaml-mode terraform-mode multiple-cursors))
  '(pdf-view-midnight-colors (cons "#556b72" "#FDF6E3"))
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
+ '(safe-local-variable-values
+   '((eval when
+           (boundp 'python-black-on-save-mode)
+           (python-black-on-save-mode -1))))
  '(server-mode nil)
  '(show-paren-mode t)
  '(tool-bar-mode nil)

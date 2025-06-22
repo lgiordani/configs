@@ -13,47 +13,97 @@
                          ("gnu" . "http://elpa.gnu.org/packages/")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; GLOBAL SETTINGS
+;; Emacs configuration
 
 ;; Open .emacs with C-x c
-(defun dotemacs () (interactive) (switch-to-buffer (find-file-noselect "~/.emacs")))
-(global-set-key (kbd "C-x c") 'dotemacs)
+(defun edit-dotemacs ()
+  (interactive)
+  (switch-to-buffer (find-file-noselect "~/.emacs")))
+
+(global-set-key (kbd "C-x c") 'edit-dotemacs)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Server mode
+
+;; When server mode is activated the word SERVER
+;; appears in the mode line.
+(defun custom-server-mode ()
+  (interactive)
+  (if (default-value 'server-mode)
+      (progn
+        (setq mode-line-misc-info (delete "SERVER " mode-line-misc-info))
+        (server-mode -1))
+    (progn
+      (add-to-list 'mode-line-misc-info "SERVER ")
+      (server-mode 1))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GLOBAL SETTINGS
+
+;; ESC is a very nice key to quit things
+(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 
 ;; No tool bar, I don't need it thanks
+;; This is the tool bar with some shortcuts like file and edit operations
 (tool-bar-mode -1)
 
-;; Visual line mode everywhere, please
+;; Same for the menu bar, thanks
+;; This is the menu bar with File, Edit, Options, and friends
+(menu-bar-mode -1)
+
+;; Visual line mode everywhere, please. Basically word wrap mode.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Visual-Line-Mode.html
 (global-visual-line-mode t)
 
 ;; Display line numbers
-(global-display-line-numbers-mode)
-
-;; I keep pressing C-next by mistake...
-(global-unset-key (kbd "C-<next>"))
+(global-display-line-numbers-mode t)
 
 ;; Set C-c, C-x, C-v just to be in sync with the rest of the world
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/CUA-Bindings.html
 (cua-mode t)
 
-;; Show the matching parenthesis
-(show-paren-mode 1)
+;; Highlight the matching parenthesis
+(show-paren-mode t)
 
 ;; When asking for help make the help window active
 (setq help-window-select t)
 
-;; Syntactic close
-;; https://github.com/emacs-berlin/syntactic-close
-(global-set-key (kbd "C-]") 'syntactic-close)
-
-;; Use spaces please
+;; Always use spaces to indent please
 (setq-default indent-tabs-mode nil)
 
-;; Ivy completion
-;; https://github.com/abo-abo/swiper
-(ivy-mode 1)
-(setq ivy-use-selectable-prompt t)
-(define-key ivy-minibuffer-map (kbd "S-<up>") #'ivy-previous-history-element)
-(define-key ivy-minibuffer-map (kbd "S-<down>") #'ivy-next-history-element)
-(define-key ivy-minibuffer-map (kbd "TAB") 'ivy-partial)
+;; Set transparency of emacs
+;; https://www.emacswiki.org/emacs/TransparentEmacs
+;; (defun transparency (value)
+;;   "Sets the transparency of the frame window. 0=transparent/100=opaque"
+;;   (interactive "nTransparency Value 0 - 100 opaque:")
+;;   (set-frame-parameter (selected-frame) 'alpha value))
+;; (set-frame-parameter (selected-frame) 'alpha '99)
+
+;; Set the title of the window to the name of the file
+(setq-default frame-title-format '("%b"))
+
+;; Unicode fonts
+(require 'unicode-fonts)
+(unicode-fonts-setup)
+
+;; Yasnippets
+;; https://github.com/joaotavora/yasnippet
+(yas-global-mode t)
+
+;; Automatically revert buffers if they change on disk
+(global-auto-revert-mode t)
+
+;; Put backup and autosave files somewhere else
+;; These often get in the way of other tools.
+(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
+(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
+(setq backup-directory-alist (list (cons ".*" backup-dir)))
+(setq auto-save-list-file-prefix autosave-dir)
+(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
+
+;; Enable upcase-region and downcase-region
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 
 ;; https://stackoverflow.com/questions/17958397/emacs-delete-whitespaces-or-a-word
 (defun kill-whitespace-or-word ()
@@ -66,48 +116,57 @@
     (kill-word 1)))
 (global-set-key (kbd "C-<delete>") 'kill-whitespace-or-word)
 
-;; Set transparency of emacs
-;; https://www.emacswiki.org/emacs/TransparentEmacs
-(defun transparency (value)
-  "Sets the transparency of the frame window. 0=transparent/100=opaque"
-  (interactive "nTransparency Value 0 - 100 opaque:")
-  (set-frame-parameter (selected-frame) 'alpha value))
-(set-frame-parameter (selected-frame) 'alpha '99)
-
-;; Set the title of the window to the name of the file
-(setq-default frame-title-format '("%b"))
-
-;; Unicode fonts
-(require 'unicode-fonts)
-(unicode-fonts-setup)
-
-;; Yasnippets
-(yas-global-mode)
-
-;; Automatically revert buffers if they change on disk
-(global-auto-revert-mode t)
-
-;; Map server mode to F5
-(global-set-key (kbd "<f5>") 'server-mode)
-
-;; Map eldoc buffer to F1
-(global-set-key (kbd "<f1>") 'eldoc-doc-buffer)
-
-;; Put backup and autosave files somewhere else
-(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
-(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
-(setq backup-directory-alist (list (cons ".*" backup-dir)))
-(setq auto-save-list-file-prefix autosave-dir)
-(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
-
-;; Activate Flycheck
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(global-set-key (kbd "M-<next>") 'flycheck-next-error)
-(global-set-key (kbd "M-<prior>") 'flycheck-previous-error)
+;; (defun scroll-up-and-recenter ()
+;;      (interactive)
+;;      (scroll-up)
+;;      (move-to-window-line-top-bottom -1)
+;;      (recenter))
+   
+;; (defun scroll-down-and-recenter ()
+;;      (interactive)
+;;      (scroll-down)
+;;      (move-to-window-line-top-bottom 0)
+;;      (recenter))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TABS
+;; Flycheck
+
+;; https://github.com/flycheck/flycheck
+(use-package flycheck
+  :ensure t
+  :config
+  :bind (("M-<next>" . flycheck-next-error)
+         ("M-<prior>" . flycheck-previous-error))
+  :hook (after-init . global-flycheck-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Ivy completion
+
+;; https://github.com/abo-abo/swiper
+(ivy-mode t)
+(setq ivy-use-selectable-prompt t)
+(define-key ivy-minibuffer-map (kbd "S-<up>") #'ivy-previous-history-element)
+(define-key ivy-minibuffer-map (kbd "S-<down>") #'ivy-next-history-element)
+;; (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-partial)
+(define-key ivy-minibuffer-map (kbd "RET") 'ivy-alt-done)
+(define-key ivy-minibuffer-map (kbd "C-RET") 'ivy-done)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; WHICH KEY
+
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode)
+  :bind
+  ("<menu>" . which-key-show-top-level))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABS AND BUFFERS
+
+;; Map move to previous and next buffer to C-S-Pg*
+(global-set-key (kbd "C-S-<prior>") 'previous-buffer)
+(global-set-key (kbd "C-S-<next>") 'next-buffer)
 
 ;; https://github.com/ema2159/centaur-tabs
 (require 'centaur-tabs)
@@ -121,40 +180,54 @@
       centaur-tabs-set-close-button nil
       centaur-tabs-set-bar 'under)
 
-;; Map move tabs to C-Pg*
+;; Map move between tabs to C-Pg*
 (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
 (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
 
-;; Map movements between tabs to C-s-
+;; Map move between tab groups to C-M-Pg*
+(global-set-key (kbd "C-M-<prior>") 'centaur-tabs-backward-group)
+(global-set-key (kbd "C-M-<next>") 'centaur-tabs-forward-group)
+
+;; Map move tabs to C-s-
 (global-set-key (kbd "C-s-<left>") 'centaur-tabs-move-current-tab-to-left)
 (global-set-key (kbd "C-s-<right>") 'centaur-tabs-move-current-tab-to-right)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TREE
+;; TREE VIEW
 
 ;; https://github.com/Alexander-Miller/treemacs
-(require 'treemacs)
-(treemacs-follow-mode t)
 
-;; This has issues when moving through projects
-;; To replicate:
-;; * Open a file in a project
-;; * Open another file in another project
-;; * Move to the tab of the previous file
-;; * Emacs freezes
-;; (treemacs-project-follow-mode t)
-(global-set-key (kbd "<f8>") 'treemacs)
-(unbind-key "<next>" treemacs-mode-map)
-(unbind-key "<prior>" treemacs-mode-map)
-(setq treemacs-read-string-input 'from-minibuffer)
- 
+(use-package treemacs
+  :ensure t
+  :defer t
+  :config
+  (progn
+    (unbind-key "<next>" treemacs-mode-map)
+    (unbind-key "<prior>" treemacs-mode-map)
+    (setq treemacs-read-string-input 'from-minibuffer)
+    (treemacs-follow-mode t)
+
+    ;; This has issues when moving through projects
+    ;; To replicate:
+    ;; * Open a file in a project
+    ;; * Open another file in another project
+    ;; * Move to the tab of the previous file
+    ;; * Emacs freezes
+    ;; (treemacs-project-follow-mode t)
+    )
+  :hook
+  (
+   (treemacs-mode . (lambda () (setq-local truncate-lines t
+					   auto-hscroll-mode 'current-line)))
+   (treemacs-mode . (lambda () (text-scale-decrease 1)))
+
+   ;; This sets focus on the tree view, I don't like it
+   ;; (emacs-startup . treemacs)
+   ))
+
 (use-package treemacs-all-the-icons)
 (treemacs-load-all-the-icons-with-workaround-font "DejaVu Sans Mono")
 
-;; Sets truncate lines
-(add-hook 'treemacs-mode-hook  (lambda () (setq-local truncate-lines t
-						      auto-hscroll-mode 'current-line)))
-			       
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LINES AND REGIONS
 
@@ -267,9 +340,6 @@ there's a region, all lines that region covers will be duplicated."
 ;; Spell check turned on by default
 (add-hook 'text-mode-hook 'flyspell-mode)
 
-;; f6 to turn it off
-(global-set-key (kbd "<f6>") 'flyspell-mode)
-
 ;; Spell check with hunspell
 (when (executable-find "hunspell")
   (setq-default ispell-program-name "hunspell")
@@ -333,7 +403,6 @@ there's a region, all lines that region covers will be duplicated."
     (setq current-theme light-theme))
   (load-theme current-theme)
   (my/check-monitor))
-(global-set-key [f10] 'toggle-theme)
 
 (toggle-theme)
 
@@ -343,10 +412,17 @@ there's a region, all lines that region covers will be duplicated."
 (use-package company
   :ensure
   ;; :bind
-  ;; (:map company-mode-map
-  ;;       ("<tab>". tab-indent-or-complete)
-  ;;       ("TAB". tab-indent-or-complete))
+  ;; (:map lsp-mode-map
+  ;;       ("<down>" . nil)
+  ;;       ("S-<down>" . company-select-next)
+  ;;       ("S-<up>" . company-select-previous))
   )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MARKDOWN
+
+;; (require 'flymake-markdownlint)
+;; (add-hook 'markdown-mode-hook 'flymake-markdownlint-setup)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PYTHON DEVELOPMENT
@@ -393,7 +469,9 @@ there's a region, all lines that region covers will be duplicated."
   (setq lsp-pylsp-plugins-mypy-enabled t)
   
   :hook
-  ((python-mode . lsp)))
+  ((python-mode . lsp))
+  :bind
+  ("<f12> n" . lsp-rename))
 
 (use-package lsp-ui
   :ensure
@@ -411,6 +489,7 @@ there's a region, all lines that region covers will be duplicated."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUST DEVELOPMENT
 
+;; https://github.com/brotzeit/rustic
 (use-package rustic
   :config
   (setq compilation-ask-about-save nil)
@@ -420,9 +499,13 @@ there's a region, all lines that region covers will be duplicated."
   (setq rustic-format-on-save t)
   (setq rustic-format-on-save-method 'rustic-cargo-fmt)
   :bind
-  (:map rustic-mode-map
-        ("C-#" . rustic-cargo-build)
-        ("C-=" . rustic-cargo-run)))
+  ("<f12> b" . rustic-cargo-build)
+  ("<f12> t" . rustic-cargo-test)
+  ("<f12> r" . rustic-cargo-run))
+
+;; For now it's here, it should be general
+(global-set-key (kbd "<f12> <right>") 'next-error)
+(global-set-key (kbd "<f12> <left>") 'prev-error)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JS DEVELOPMENT
@@ -447,18 +530,19 @@ there's a region, all lines that region covers will be duplicated."
 (add-hook 'js2-mode-hook 'prettier-js-mode)
 
 ;; Use eslint with rjsx-mode for jsx files
-(flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OTHER LANGUAGES
 
 ;; Terraform
 ;; https://github.com/emacsorphanage/terraform-mode
-(require 'terraform-mode)
-;; Since I use tfenv the path is different
-(setq exec-path (append exec-path '("~/.tfenv/bin/")))
-(add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
-(add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
+(use-package terraform-mode
+  :ensure t
+  :config
+  (setq exec-path
+        (append exec-path '("~/.tfenv/bin/")))
+  :hook (terraform-mode . terraform-format-on-save-mode))
 
 ;; Mau
 (let ((mau-mode-file "~/devel/mau.el"))
@@ -466,6 +550,25 @@ there's a region, all lines that region covers will be duplicated."
    (load-file mau-mode-file))
  )
 (add-to-list 'auto-mode-alist '("\\.mau\\'" . mau-mode))
+
+;; Insert two backticks and move cursor between them
+(defun insert-backticks ()
+  (interactive)
+  (insert "``")
+  (left-char)
+  )
+
+;; Insert macro
+(defun insert-macro ()
+  (interactive)
+  (insert "[](\"\")")
+  (left-char 5)
+  )
+
+(add-hook 'mau-mode-hook
+          '(lambda ()
+             (local-set-key (kbd "M-`") 'insert-backticks)
+             (local-set-key (kbd "M-[") 'insert-macro)))
 
 ;; YAML
 (require 'yaml-mode)
@@ -490,8 +593,7 @@ there's a region, all lines that region covers will be duplicated."
 ;; FILES AND PROJECTS
 
 ;; My permanent scratch file that I can save
-(defun dotemacsnotes () (interactive) (switch-to-buffer (find-file-noselect "~/.emacsnotes")))
-(global-set-key (kbd "<f2>") 'dotemacsnotes)
+(defun edit-dot-emacsnotes () (interactive) (switch-to-buffer (find-file-noselect "~/.emacsnotes")))
 
 ;; Recent files
 ;; https://www.emacswiki.org/emacs/RecentFiles
@@ -507,11 +609,7 @@ there's a region, all lines that region covers will be duplicated."
   :init
   (setq projectile-completion-system 'ivy)
   (setq projectile-project-search-path '(("~/devel" . 2)))
-  (projectile-mode +1)
-  :bind (:map projectile-mode-map
-              ("<f7>" . projectile--find-file)
-              ("<f9>" . projectile-command-map)))
-
+  (projectile-mode t))
 
 ;; Add projectile to treemacs
 ;; (use-package treemacs-projectile
@@ -521,8 +619,43 @@ there's a region, all lines that region covers will be duplicated."
 ;; https://github.com/Alexander-Miller/treemacs/issues/660
 ;; (add-hook 'projectile-after-switch-project-hook 'treemacs-display-current-project-exclusively)
 
-;; Prescient?
-;; https://github.com/raxod502/prescient.el
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FUNCTION KEYS MAPPINGS
 
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
+;; Map eldoc buffer to F1
+(global-set-key (kbd "<f1>") 'eldoc-doc-buffer)
+
+;; Map notes file to F2
+(global-set-key (kbd "<f2>") 'edit-dot-emacsnotes)
+
+;; Map treemacs to F3
+(global-set-key (kbd "<f3>") 'treemacs)
+
+;; Map server mode to F5
+(global-set-key (kbd "<f5>") 'custom-server-mode)
+
+;; Spell check turned on by default F6 to turn it off
+(global-set-key (kbd "<f6>") 'flyspell-mode)
+
+(global-set-key (kbd "<f7>") 'projectile-find-file)
+(global-set-key (kbd "<f8>") 'projectile-command-map)
+
+(global-set-key (kbd "<f11>") 'goto-line)
+
+;; (global-set-key [f10] 'toggle-theme)
+
+;; (global-set-key (kbd "<next>") 'scroll-up-and-recenter)
+;; (global-set-key (kbd "<prior>") 'scroll-down-and-recenter)
+
+;; Consider this to change font globally
+;; (global-set-key (kbd "s-=")
+;;                 (lambda ()
+;;                   (interactive)
+;;                   (let ((old-face-attribute (face-attribute 'default :height)))
+;;                     (set-face-attribute 'default nil :height (+ old-face-attribute 10)))))
+
+;; (global-set-key (kbd "s--")
+;;                 (lambda ()
+;;                   (interactive)
+;;                   (let ((old-face-attribute (face-attribute 'default :height)))
+;;                     (set-face-attribute 'default nil :height (- old-face-attribute 10)))))

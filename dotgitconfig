@@ -1,5 +1,5 @@
 [core]
-        editor = emacs
+        editor = vi
         excludesfile = ~/.gitignore
 
 [user]
@@ -38,23 +38,23 @@
         mem = "!git merge $(git master)"
         mff = merge --no-ff
         next = "!git co . && git checkout $(git next-commit)"
-        next-commit = "!git logo --reverse --ancestry-path HEAD..develop | head -n 1 | cut -d \" \" -f 1"
+        next-commit = "!git logo --reverse --ancestry-path HEAD..$(git master) | head -n 1 | cut -d \" \" -f 1"
         prev = "!git co . && git co HEAD^"
         pub = "!git push --set-upstream origin $(git brn)"
         put = push --set-upstream origin
-        sb = "!git checkout - && git stash apply"
-        sh = stash
-        shl = stash list
+        res = restore --staged
+        s = "!git show"
+        sn = "!git s --name-status"
+        ss = "!git s --stat"
         st = status
-        sw = "!git stash && git checkout"
         unpub = push origin :$(git brn)
         upd = "!git com && git pull && git clr && git brv"
-       
-        blog = log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)- %an%C(reset)' --abbrev-commit
-        logo = log --pretty=oneline
-        tlog = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+        lo = log --format=format:'%C(yellow)%h%C(reset) %s %C(bold yellow)%d%C(reset)'
+        lt = log --all --graph --abbrev-commit --format=format:'%C(bold blue)%h%C(reset) %C(bold green)(%as)%C(reset) %C(magenta)%an%C(reset) - %C(white)%s%C(reset) %C(bold yellow)%d%C(reset)'
+        ln = log --all --graph --abbrev-commit --name-only --format=format:'%C(bold blue)%h%C(reset) %C(bold green)(%as)%C(reset) %C(magenta)%an%C(reset) - %C(white)%s%C(reset) %C(bold yellow)%d%C(reset)%n'
 
 [push]
         default = simple
+
 [fetch]
         prune = true
