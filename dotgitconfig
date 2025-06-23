@@ -14,43 +14,114 @@
 
 [alias]
         alias = config --get-regexp 'alias.*'
+
+        # Branch Delete
         bd = branch -d
+
+        # BRanch
         br = branch
+        
+        # BRanch Name
         brn = rev-parse --abbrev-ref HEAD
+
+        # BRanches Verbose
         brv = branch -vv
+
+        # CommIt verbose
         ci = commit -v
+
         clr = "!git brv | grep ': gone] ' | awk '{print $1}' | xargs -r -n1 git branch -D"
+
+        # CheckOut Branch
         co = checkout
+
+        # CheckOut Branch
         cob = checkout -b
+        
+        # CheckOut Develop
         cod = checkout develop
+
+        # CheckOut Ma(ster|in)
         com = "!git checkout $(git master)"
+
+        # CheckOut Track
+        # Checkout a remote branch and track it.
         cot = checkout --track
+
+        # Cherry-Pick
         cp = cherry-pick
+
+        # Cherry-Pick No-commit
         cpn = cherry-pick -n
+
+        # Cherry-Pick No-commit and Reset
         cpnr = "!f() { git cpn $@; git reset HEAD . ; }; f"
+        
+        # CommIt verbose Using
+        # Commit using another commit message.
+        ciu = "!f() { git ci -m \"$(git log -1 --format=%B $1)\"; }; f"
+
         dd = "!git diff $(git merge-base develop $(git brn))..$(git brn)"
         ddn = "!git dd --name-only"
 	df = diff --color-words="[^[:space:]]|([[:alnum:]]|UTF_8_GUARD)+"
-	master = "!git brv | grep -Eo '^\\*? +(master|main)' | sort | head -n 1 | sed -r s,'\\*? +',,g"
+
+        # Either `master` or `main`
+        master = "!git brv | grep -Eo '^\\*? +(master|main)' | sort | head -n 1 | sed -r s,'\\*? +',,g"
+        
         md = "!git diff $(git merge-base $(git master) $(git brn))..$(git brn)"
+
+        # Master Diff Name-only
+        # Show the differences between the current branch and the master one.
         mdn = "!git md --name-only"
+
+        # MErge Develop
         med = merge develop
+
+        # MErge Master
         mem = "!git merge $(git master)"
+        
         mff = merge --no-ff
         next = "!git co . && git checkout $(git next-commit)"
         next-commit = "!git logo --reverse --ancestry-path HEAD..$(git master) | head -n 1 | cut -d \" \" -f 1"
         prev = "!git co . && git co HEAD^"
+
+        # PUblish Branch
+        # Push the current branch and track it.
         pub = "!git push --set-upstream origin $(git brn)"
         put = push --set-upstream origin
+
+        # REstore Staged
         res = restore --staged
+
+        # Show
+        # Shows the diff of the latest commit.
         s = "!git show"
+
+        # Show Names
+        # Show the lastest commit with message
+        # and the names of the changed files.
         sn = "!git s --name-status"
+
+        # Show Stats
+        # Show the lastest commit with message,
+        # names of the changed files, and stats.
         ss = "!git s --stat"
+
+        # STatus
         st = status
+
         unpub = push origin :$(git brn)
         upd = "!git com && git pull && git clr && git brv"
+
+        # Log Online
         lo = log --format=format:'%C(yellow)%h%C(reset) %s %C(bold yellow)%d%C(reset)'
+
+        # Log Tree
+        # Show all branches in a tree
         lt = log --all --graph --abbrev-commit --format=format:'%C(bold blue)%h%C(reset) %C(bold green)(%as)%C(reset) %C(magenta)%an%C(reset) - %C(white)%s%C(reset) %C(bold yellow)%d%C(reset)'
+
+        # Log Names
+        # Show all branches in a tree and the names of the changed files.
         ln = log --all --graph --abbrev-commit --name-only --format=format:'%C(bold blue)%h%C(reset) %C(bold green)(%as)%C(reset) %C(magenta)%an%C(reset) - %C(white)%s%C(reset) %C(bold yellow)%d%C(reset)%n'
 
 [push]
