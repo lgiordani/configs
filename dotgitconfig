@@ -65,6 +65,10 @@
         ddn = "!git dd --name-only"
 	df = diff --color-words="[^[:space:]]|([[:alnum:]]|UTF_8_GUARD)+"
 
+        # Diff with extended context
+        dfu = "!git df -U20"
+        diffu = "!git diff -U20"
+
         # Either `master` or `main`
         master = "!git brv | grep -Eo '^\\*? +(master|main)' | sort | head -n 1 | sed -r s,'\\*? +',,g"
         
@@ -107,6 +111,9 @@
         # names of the changed files, and stats.
         ss = "!git s --stat"
 
+        # Show with extended context
+        su = "!git s -U20"
+        
         # STatus
         st = status
 

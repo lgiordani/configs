@@ -1,0 +1,45 @@
+###############################
+# Pyenv
+
+export PYENV_ROOT="${HOME}/.pyenv"
+export PATH="${PYENV_ROOT}/bin:${PATH}"
+
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+
+###############################
+# OpenTofu
+
+export PATH="$HOME/.tofuenv/bin:$PATH"
+
+###############################
+# My fortune idioms
+
+FORTUNE_FILE=~/.fortune/idioms
+IMAGE_FILE=~/.fortune/cat
+if [[ ${FORTUNE_FILE} -nt ${FORTUNE_FILE}.dat ]]; then
+   strfile ${FORTUNE_FILE}
+fi
+fortune ${FORTUNE_FILE} | cowsay -f ${IMAGE_FILE} | lolcat
+
+
+###############################
+# Rust
+
+. "$HOME/.cargo/env"
+
+
+###############################
+# NVM
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+
+###############################
+# Claude
+
+export PATH="${HOME}/.claude/bin:${PATH}"

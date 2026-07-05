@@ -40,6 +40,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL SETTINGS
 
+;; Save the open buffers
+(desktop-save-mode 1)
+(savehist-mode 1)
+
+;; Don't beep, please
+(setq visible-bell t)
+
 ;; ESC is a very nice key to quit things
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 
@@ -58,6 +65,10 @@
 ;; Display line numbers
 (global-display-line-numbers-mode t)
 
+;; But use minimum three colums so the screen
+;; doesn't keep adjusting, which is so infuriating.
+(setq-default display-line-numbers-width 3)
+
 ;; Set C-c, C-x, C-v just to be in sync with the rest of the world
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/CUA-Bindings.html
 (cua-mode t)
@@ -70,6 +81,10 @@
 
 ;; Always use spaces to indent please
 (setq-default indent-tabs-mode nil)
+
+;; Regex search
+(global-set-key (kbd "C-S-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-S-r") 'isearch-backward-regexp)
 
 ;; Set transparency of emacs
 ;; https://www.emacswiki.org/emacs/TransparentEmacs
@@ -135,9 +150,19 @@
 (use-package flycheck
   :ensure t
   :config
+  ;; (flycheck-add-next-checker 'python-ruff 'python-pylint)
   :bind (("M-<next>" . flycheck-next-error)
          ("M-<prior>" . flycheck-previous-error))
   :hook (after-init . global-flycheck-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Magit
+
+(use-package magit
+  :ensure t
+  :config
+  (progn
+    (unbind-key "C-w" magit-mode-map)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ivy completion
@@ -150,6 +175,13 @@
 ;; (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-partial)
 (define-key ivy-minibuffer-map (kbd "RET") 'ivy-alt-done)
 (define-key ivy-minibuffer-map (kbd "C-RET") 'ivy-done)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Increase/decrease font (zoom)
+
+(global-set-key (kbd "C-s-=") (lambda () (interactive) (global-text-scale-adjust 1)))
+(global-set-key (kbd "C-s--") (lambda () (interactive) (global-text-scale-adjust -1)))
+(global-set-key (kbd "C-s-0") (lambda () (interactive) (global-text-scale-adjust 0)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WHICH KEY
@@ -173,11 +205,12 @@
 (centaur-tabs-mode t)
 (centaur-tabs-headline-match)
 (centaur-tabs-group-by-projectile-project)
-(setq centaur-tabs-style "bar"
+(setq centaur-tabs-cycle-scope 'tabs
       centaur-tabs-height 32
+      centaur-tabs-set-close-button nil
       centaur-tabs-set-icons t
       centaur-tabs-set-modified-marker t
-      centaur-tabs-set-close-button nil
+      centaur-tabs-style "bar"
       centaur-tabs-set-bar 'under)
 
 ;; Map move between tabs to C-Pg*
@@ -235,12 +268,11 @@
 (defun comment-or-uncomment-line-or-region ()
     "Comments or uncomments the region or the current line if there's no active region."
     (interactive)
-    (let (beg end)
+    (let (beg end (deactivate-mark nil))
         (if (region-active-p)
             (setq beg (region-beginning) end (region-end))
             (setq beg (line-beginning-position) end (line-end-position)))
-        (comment-or-uncomment-region beg end)
-        (next-line)))
+        (comment-or-uncomment-region beg end)))
 (global-set-key (kbd "C-/") 'comment-or-uncomment-line-or-region)
 
 ;; Drag-stuff - Drag lines and regions
@@ -291,10 +323,10 @@ there's a region, all lines that region covers will be duplicated."
 
 ;; Multiple cursors
 (global-set-key (kbd "C-d") 'mc/mark-next-like-this-word)
+(global-set-key (kbd "C-M-d") 'mc/unmark-next-like-this)
 (global-set-key (kbd "C-c C-d") 'mc/mark-all-words-like-this)
 (global-set-key (kbd "C-M-<up>") 'mc/mark-previous-lines)
 (global-set-key (kbd "C-M-<down>") 'mc/mark-next-lines)
-(global-set-key (kbd "C-M-d") 'mc/edit-lines)
 
 ;; C-a marks the whole buffer
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
@@ -315,8 +347,8 @@ there's a region, all lines that region covers will be duplicated."
 		     (lambda (buf) (not (string-match-p "^*" (buffer-name buf)))))
 
 ;; Golden ratio mode
-(require 'golden-ratio)
-(golden-ratio-mode 1)
+;; (require 'golden-ratio)
+;; (golden-ratio-mode 1)
 
 ;; Show file full path
 ;; https://stackoverflow.com/questions/3669511/the-function-to-show-current-files-full-path-in-mini-buffer
@@ -326,7 +358,14 @@ there's a region, all lines that region covers will be duplicated."
   (message (buffer-file-name))
   (kill-new (buffer-file-name)))
 
-(global-set-key (kbd "C-x f") 'show-file-full-path)
+(global-set-key (kbd "C-x F") 'show-file-full-path)
+
+(defun show-file-name_only ()
+  (interactive)
+  (message (file-name-nondirectory (buffer-file-name)))
+  (kill-new (file-name-nondirectory (buffer-file-name))))
+
+(global-set-key (kbd "C-x f") 'show-file-name_only)
 
 ;; kill the current buffer instead of choosing
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
@@ -419,21 +458,6 @@ there's a region, all lines that region covers will be duplicated."
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MARKDOWN
-
-;; (require 'flymake-markdownlint)
-;; (add-hook 'markdown-mode-hook 'flymake-markdownlint-setup)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; PYTHON DEVELOPMENT
-
-(pyenv-mode)
-(pyenv-mode-set "emacs")
-
-(setq-default flycheck-disabled-checkers '(python-flake8))
-;; (setq-default flycheck-disabled-checkers '(python-pylint))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LSP
 
 ;; https://github.com/mattduck/dotfiles/blob/master/emacs.d.symlink/init.org#lsp-base-packages
@@ -443,33 +467,33 @@ there's a region, all lines that region covers will be duplicated."
   :commands lsp
   :custom
   ;; what to use when checking on-save. "check" is default, I prefer clippy
-  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  ;; (lsp-rust-analyzer-cargo-watch-command "clippy")
   (lsp-eldoc-render-all t)
   (lsp-idle-delay 0.6)
   ;; enable / disable the hints as you prefer:
-  (lsp-rust-analyzer-server-display-inlay-hints t)
+  (lsp-rust-analyzer-server-display-inlay-hints nil)
   (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
   (lsp-rust-analyzer-display-chaining-hints t)
   (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
   (lsp-rust-analyzer-display-closure-return-type-hints t)
   (lsp-rust-analyzer-display-parameter-hints nil)
-  (lsp-rust-analyzer-display-reborrow-hints nil)
+  ;; (lsp-rust-analyzer-display-reborrow-hints nil)
   
   :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+
   (setq lsp-diagnostic-package :none)
   (setq lsp-ui-doc-enable nil)
   (setq lsp-prefer-capf t)
-  ;; (setq lsp-print-io t)
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
 
   ;; Python
-  (setq lsp-pylsp-plugins-black-enabled t)
-  (setq lsp-pylsp-plugins-flake8-enabled t)
-  (setq lsp-pylsp-plugins-pylint-enabled nil)
-  (setq lsp-pylsp-plugins-mypy-enabled t)
-  
+  ;; (setq lsp-pylsp-plugins-pylint-enabled t)
+  ;; (setq lsp-pylsp-plugins-ruff-enabled t)
+  ;; (setq lsp-pylsp-plugins-mypy-enabled t)
+
   :hook
   ((python-mode . lsp))
+
   :bind
   ("<f12> n" . lsp-rename))
 
@@ -481,10 +505,34 @@ there's a region, all lines that region covers will be duplicated."
   (lsp-ui-sideline-show-hover t)
   (lsp-ui-doc-enable nil))
 
-(use-package python-black
+(use-package ruff-format
   :demand t
   :after python
-  :hook (python-mode . python-black-on-save-mode))
+  :hook (python-mode . ruff-format-on-save-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MARKDOWN
+
+;; (require 'flymake-markdownlint)
+;; (add-hook 'markdown-mode-hook 'flymake-markdownlint-setup)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; C DEVELOPMENT
+
+(defun my-c-mode-hook ()
+  (setq c-basic-offset 4)
+  (c-set-offset 'case-label '+)
+  (c-set-style "k&r"))
+
+(add-hook 'c-mode-hook 'my-c-mode-hook)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PYTHON DEVELOPMENT
+
+(pyenv-mode)
+(pyenv-mode-set "emacs")
+
+(setq-default flycheck-disabled-checkers '(python-flake8))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUST DEVELOPMENT
@@ -574,10 +622,6 @@ there's a region, all lines that region covers will be duplicated."
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode))
 
-;; KOTLIN
-(require 'kotlin-mode)
-(add-to-list 'auto-mode-alist '("\\.kt\\'" . kotlin-mode))
-
 ;; HTML/CSS
 ;; https://github.com/smihica/emmet-mode
 (require 'emmet-mode)
@@ -639,6 +683,7 @@ there's a region, all lines that region covers will be duplicated."
 
 (global-set-key (kbd "<f7>") 'projectile-find-file)
 (global-set-key (kbd "<f8>") 'projectile-command-map)
+;; (global-set-key (kbd "<f9>") lsp-command-map)
 
 (global-set-key (kbd "<f11>") 'goto-line)
 
